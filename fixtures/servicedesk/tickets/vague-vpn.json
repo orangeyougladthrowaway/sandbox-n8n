@@ -1,0 +1,20 @@
+{
+  "id": "sd_vague_vpn",
+  "ticket_ref": "TKT-VPN-001",
+  "status": "new",
+  "priority": "high",
+  "category": "incident",
+  "summary": "VPN not working",
+  "description": "I cannot connect to VPN from home.",
+  "requester": {
+    "id": "alice@example.invalid",
+    "display_name": "Alice",
+    "channel": "servicedesk_chat"
+  },
+  "assignment": {
+    "bot_technician_id": "bot-l1-sandbox",
+    "current_assignee": "bot-l1-sandbox",
+    "handoff_at": null,
+    "handoff_reason": null
+  }
+}

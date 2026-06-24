@@ -1,0 +1,69 @@
+{
+  "name": "DO Route Owners",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## DO Route Owners\n\nThin workflow — logic in lib/",
+        "height": 140,
+        "width": 360
+      },
+      "id": "0f6986f0-693a-4a01-bd69-b03c507e3444",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "30270dc8-6f48-43d9-87f8-f89d45e40e45",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { runOpsQuery, triageOpsTask, writeTeamsNotification } = lib;\nconst row = runOpsQuery('pending-changes').rows[0];\nconst { route } = triageOpsTask(row, []);\nconst file = writeTeamsNotification(row, route, path.join(dataRoot, 'outbound', 'teams'));\nreturn [{ json: { row, route, file } }];"
+      },
+      "id": "de420f3e-9930-45db-a4ba-2df23c1e578e",
+      "name": "Run lib",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run lib",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "do-route-owners",
+  "meta": {
+    "instanceId": "sandbox-n8n"
+  },
+  "tags": [
+    "daily-ops"
+  ]
+}

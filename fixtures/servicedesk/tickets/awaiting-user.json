@@ -1,0 +1,29 @@
+{
+  "id": "sd_awaiting_user",
+  "ticket_ref": "TKT-EMAIL-004",
+  "status": "awaiting_user",
+  "priority": "medium",
+  "category": "incident",
+  "summary": "Outlook sync issue",
+  "description": "Outlook stops syncing after 10 minutes.",
+  "requester": {
+    "id": "carol@example.invalid",
+    "display_name": "Carol",
+    "channel": "servicedesk_chat"
+  },
+  "conversation": [
+    {
+      "at": "2025-06-24T09:00:00.000Z",
+      "actor": "bot",
+      "channel": "servicedesk_chat",
+      "text": "Which Outlook version are you using?",
+      "intent": "elicit"
+    }
+  ],
+  "assignment": {
+    "bot_technician_id": "bot-l1-sandbox",
+    "current_assignee": "bot-l1-sandbox",
+    "handoff_at": null,
+    "handoff_reason": null
+  }
+}

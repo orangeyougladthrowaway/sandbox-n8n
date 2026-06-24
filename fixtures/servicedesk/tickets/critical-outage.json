@@ -1,0 +1,20 @@
+{
+  "id": "sd_critical_outage",
+  "ticket_ref": "TKT-OUT-003",
+  "status": "new",
+  "priority": "critical",
+  "category": "incident",
+  "summary": "Critical outage - email down",
+  "description": "Company-wide email outage reported. All users affected.",
+  "requester": {
+    "id": "ops@example.invalid",
+    "display_name": "Ops Lead",
+    "channel": "servicedesk_chat"
+  },
+  "assignment": {
+    "bot_technician_id": "bot-l1-sandbox",
+    "current_assignee": "bot-l1-sandbox",
+    "handoff_at": null,
+    "handoff_reason": null
+  }
+}

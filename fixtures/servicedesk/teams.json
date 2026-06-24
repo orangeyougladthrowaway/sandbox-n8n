@@ -1,0 +1,5 @@
+[
+  { "id": "network-team", "name": "Network Team", "queue": "l1-incidents" },
+  { "id": "support-team", "name": "Support Team", "queue": "l1-requests" },
+  { "id": "security-team", "name": "Security Team", "queue": "l1-requests" }
+]

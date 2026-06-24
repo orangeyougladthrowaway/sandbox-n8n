@@ -1,0 +1,46 @@
+{
+  "name": "Complaints Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Complaints Intake\n\n[[workflows/complaints/complaints-intake]]\n\nFile drop → normalize via lib/ → classify → route → notify",
+        "height": 180,
+        "width": 400
+      },
+      "id": "c1000001-0000-4000-8000-000000000001",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-100, -160]
+    },
+    {
+      "parameters": {},
+      "id": "c1000002-0000-4000-8000-000000000002",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst fs = await import('node:fs');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { FileComplaintStore, processComplaintFile } = lib;\nconst fixture = path.join(repoRoot, 'fixtures', 'complaints', 'angry-support.eml');\nconst dest = path.join(dataRoot, 'inbound', 'mailbox', 'angry-support.eml');\nfs.mkdirSync(path.dirname(dest), { recursive: true });\nfs.copyFileSync(fixture, dest);\nconst dbFile = path.join(dataRoot, '_runtime', 'complaints-db.json');\nconst store = new FileComplaintStore(dbFile);\nconst record = await processComplaintFile(dest, store);\nreturn [{ json: record }];"
+      },
+      "id": "c1000003-0000-4000-8000-000000000003",
+      "name": "Process fixture complaint",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [[{ "node": "Process fixture complaint", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "complaints-intake-v1",
+  "meta": { "instanceId": "sandbox-n8n" },
+  "tags": ["complaints"]
+}

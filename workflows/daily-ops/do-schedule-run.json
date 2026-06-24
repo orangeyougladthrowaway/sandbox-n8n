@@ -1,0 +1,69 @@
+{
+  "name": "DO Schedule Run",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## DO Schedule Run\n\nThin workflow — logic in lib/",
+        "height": 140,
+        "width": 360
+      },
+      "id": "d785a68b-7a5c-465d-b316-f67f8d81985b",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "6b864f37-f70b-40a9-b392-eda58f273ea8",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { runOpsQuery } = lib;\nreturn [{ json: runOpsQuery('open-incidents') }];"
+      },
+      "id": "6f4bb2b7-13bb-45c6-85fe-c5387ddb710d",
+      "name": "Run lib",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run lib",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "do-schedule-run",
+  "meta": {
+    "instanceId": "sandbox-n8n"
+  },
+  "tags": [
+    "daily-ops"
+  ]
+}

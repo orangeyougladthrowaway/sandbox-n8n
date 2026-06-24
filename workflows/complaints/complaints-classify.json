@@ -1,0 +1,69 @@
+{
+  "name": "Complaints Classify",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Complaints Classify\n\nThin workflow — logic in lib/",
+        "height": 140,
+        "width": 360
+      },
+      "id": "23ea6ce0-1f90-45ba-9346-709b3f020b8c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "5a7db974-fff3-4454-b238-567b40ca8e6b",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst { normalizeInboundArtifact, classifyComplaint } = lib;\nconst fp = path.join(repoRoot, 'fixtures', 'complaints', 'formal-dsar.eml');\nconst record = classifyComplaint(normalizeInboundArtifact(fp, fs.readFileSync(fp, 'utf8')));\nreturn [{ json: record }];"
+      },
+      "id": "0f764078-8cfc-4ec2-acf7-0a8d12e57403",
+      "name": "Run lib",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run lib",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "complaints-classify",
+  "meta": {
+    "instanceId": "sandbox-n8n"
+  },
+  "tags": [
+    "complaints"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "name": "DC Triage Exception",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## DC Triage Exception\n\nThin workflow — logic in lib/",
+        "height": 140,
+        "width": 360
+      },
+      "id": "5fa875aa-6dba-4457-9e70-f99ade101585",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "1f7c6fe2-6d13-4460-b2d3-fd6b16055cb6",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { runCheckQuery, triageException, createExceptionTicket } = lib;\nconst row = runCheckQuery('stale-pipeline').rows[0];\nconst { triage, summary } = triageException(row);\nconst ticket = await createExceptionTicket(row, triage, { skipHttp: true });\nreturn [{ json: { row, triage, summary, ticket } }];"
+      },
+      "id": "2c340f04-0537-4b3c-8f39-b36b69ca8c77",
+      "name": "Run lib",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run lib",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dc-triage-exception",
+  "meta": {
+    "instanceId": "sandbox-n8n"
+  },
+  "tags": [
+    "daily-checks"
+  ]
+}

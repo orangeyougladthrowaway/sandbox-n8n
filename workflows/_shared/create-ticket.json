@@ -1,0 +1,69 @@
+{
+  "name": "Shared Create Ticket",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Shared Create Ticket\n\nThin workflow — logic in lib/",
+        "height": 140,
+        "width": 360
+      },
+      "id": "022bf39f-1ed6-4f5b-93e0-2de358ee6d76",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "d921e6c4-a6da-47b0-87f0-328f797ee063",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { createTicketPayload, validateTicketPayload, createTicket } = lib;\nconst payload = createTicketPayload({ title: 'Shared test', description: 'POC', priority: 'medium', source_ref: 'shared_1', source_program: 'servicedesk' });\nconst v = validateTicketPayload(payload);\nif (!v.valid) throw new Error(v.errors.join('; '));\ntry { const t = await createTicket(v.payload); return [{ json: t }]; } catch { return [{ json: { ticket_ref: 'tkt_sim_shared', simulated: true } }]; }"
+      },
+      "id": "7adf6aa7-44cd-4796-aee3-9db64086722b",
+      "name": "Run lib",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run lib",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "shared-create-ticket",
+  "meta": {
+    "instanceId": "sandbox-n8n"
+  },
+  "tags": [
+    "shared"
+  ]
+}

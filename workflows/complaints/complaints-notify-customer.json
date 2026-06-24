@@ -1,0 +1,69 @@
+{
+  "name": "Complaints Notify Customer",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Complaints Notify Customer\n\nThin workflow — logic in lib/",
+        "height": 140,
+        "width": 360
+      },
+      "id": "4bb85d20-73c4-4f7c-ae39-4c756bd73e1c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e5332eea-40e7-44c3-ba96-b0a5fb422368",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { createComplaintRecord, notifyCustomer } = lib;\nconst r = createComplaintRecord({ id: 'cmp_notify', normalized_text: 'test', thread_id: 'thread-demo' });\nreturn [{ json: notifyCustomer(r, { outDir: path.join(dataRoot, 'outbound', 'sent') }).record }];"
+      },
+      "id": "5ac8af8b-c9c0-42f4-8013-a62bb1f2345d",
+      "name": "Run lib",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run lib",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "complaints-notify-customer",
+  "meta": {
+    "instanceId": "sandbox-n8n"
+  },
+  "tags": [
+    "complaints"
+  ]
+}

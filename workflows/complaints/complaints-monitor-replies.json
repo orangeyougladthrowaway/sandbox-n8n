@@ -1,0 +1,69 @@
+{
+  "name": "Complaints Monitor Replies",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Complaints Monitor Replies\n\nThin workflow — logic in lib/",
+        "height": 140,
+        "width": 360
+      },
+      "id": "2e35aeaf-f67a-4a8e-a3ab-cb69de1b0ff5",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "ab324292-10be-422c-988e-59e78f16771e",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst { FileComplaintStore, processReplyFile, createComplaintRecord } = lib;\nconst db = path.join(dataRoot, '_runtime', 'complaints-reply-demo.json');\nconst store = new FileComplaintStore(db);\nstore.upsertComplaint(createComplaintRecord({ id: 'cmp_reply', thread_id: 'thread-reply-demo' }));\nconst reply = path.join(dataRoot, 'inbound', 'mailbox', 'replies', 'demo-reply.eml');\nfs.mkdirSync(path.dirname(reply), { recursive: true });\nfs.writeFileSync(reply, 'Thread-ID: thread-reply-demo\\n\\nStill unhappy');\nreturn [{ json: processReplyFile(reply, store) }];"
+      },
+      "id": "fc9cea07-a477-4f69-9a0e-0c136ced2df1",
+      "name": "Run lib",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run lib",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "complaints-monitor-replies",
+  "meta": {
+    "instanceId": "sandbox-n8n"
+  },
+  "tags": [
+    "complaints"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "name": "DC Cursor Bundle",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## DC Cursor Bundle\n\nThin workflow — logic in lib/",
+        "height": 140,
+        "width": 360
+      },
+      "id": "de52977e-3297-499a-bc57-b2721d3d8b70",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "5bc590f5-4591-464a-b037-6669287b3c17",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { runCheckQuery, triageException, writeCursorBundle, newCheckRunId } = lib;\nconst row = runCheckQuery('null-required-fields').rows[0];\nconst { triage, summary } = triageException(row);\nconst dir = writeCursorBundle({ checkRunId: newCheckRunId(), row, triage, summary, outRoot: path.join(dataRoot, 'cursor-requests') });\nreturn [{ json: { bundle_dir: dir } }];"
+      },
+      "id": "1ef37f2a-9732-4d58-9eac-5a752abc92bc",
+      "name": "Run lib",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run lib",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dc-cursor-bundle",
+  "meta": {
+    "instanceId": "sandbox-n8n"
+  },
+  "tags": [
+    "daily-checks"
+  ]
+}

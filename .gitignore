@@ -1,0 +1,8 @@
+node_modules/
+.n8n/
+workflows/_export/
+.env
+.env.*
+!.env.example
+_runtime/
+complaints-db.json

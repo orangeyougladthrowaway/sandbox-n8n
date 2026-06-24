@@ -1,0 +1,509 @@
+# n8n coding principles
+
+#n8n #standards #workflows #community-node #testing
+
+> **Companion:** [[N8N-CODEBASE-DOCUMENTATION]] — document every public change as you go. Workflows, packages, and docs ship together.
+
+---
+
+## Purpose
+
+Opinionated defaults for n8n repositories: maintainable workflows, testable logic, and clear boundaries between orchestration (canvas) and implementation (code). These rules are **solution-agnostic** — they apply to any n8n task unless an ADR in `docs/vault/architecture/decisions/` overrides them.
+
+---
+
+## Workspace scope (mandatory)
+
+Implement and edit **only** in the repository open as the current Cursor workspace: code (`lib/`, `tests/`, `scripts/`, `workflows/`), root config, and `docs/vault/`. Never create parallel copies of the project on disk elsewhere unless the user explicitly directs a different path. See [[N8N-CODEBASE-DOCUMENTATION#Workspace scope (mandatory)]].
+
+---
+
+## Core values
+
+1. **Orchestrate on canvas, implement in code** — workflows wire nodes; business rules live in testable modules or custom nodes.
+2. **Prefer built-in nodes** — Set, IF, Switch, Filter, Merge before Code; HTTP Request before raw `fetch` in Code.
+3. **Single responsibility** — one workflow, one clear outcome; one node, one step; one function, one rule.
+4. **DRY** — shared logic in `lib/`, sub-workflows, or custom node package — not copy-pasted across Code nodes.
+5. **Explicit item contracts** — document expected `json` / binary shape at workflow boundaries.
+6. **Happy path only** — implement correct behaviour; invalid input and errors surface explicitly (branch, Error Trigger, or `NodeOperationError`).
+7. **No silent workarounds** — no empty returns, swallowed errors, or "continue on fail" without a documented error path.
+8. **Credentials never in git** — credential types and wiring are documented; values live in n8n credential store only.
+9. **Document as you go** — see [[N8N-CODEBASE-DOCUMENTATION]].
+10. **Pin n8n version** — README and vault state the target version workflows were built against.
+
+---
+
+## Project structure
+
+Repos vary by scope. Use the layout that matches the project; document the actual tree in [[architecture/repo-layout]].
+
+### A — Workflows-only repo
+
+```
+repo-root/
+├── README.md
+├── package.json                 ← optional: devDeps, test script for lib/
+├── workflows/
+│   ├── *.json                   ← exported workflows (no secrets)
+│   └── README.md
+├── lib/                         ← optional: shared JS/TS for Code nodes
+├── tests/
+├── scripts/
+│   └── run.ps1
+├── credentials/                 ← EMPTY in git (.gitkeep only)
+├── .n8n/                        ← runtime data (gitignored)
+└── docs/vault/
+```
+
+### B — Community / custom node package
+
+Follow [n8n community package conventions](https://docs.n8n.io/integrations/creating-nodes/build/):
+
+```
+repo-root/
+├── package.json                 ← n8n.nodes, n8n.credentials, n8n.npm.packageName
+├── tsconfig.json
+├── gulpfile.js
+├── nodes/
+│   └── <NodeName>/
+│       ├── <NodeName>.node.ts   ← INodeType
+│       └── <node>.svg
+├── credentials/                 ← ICredentialType (*.credentials.ts) if needed
+├── dist/                        ← build output (gitignored or published)
+├── test/ or __tests__/          ← jest unit tests
+└── docs/vault/
+```
+
+### C — Monorepo (workflows + packages)
+
+Keep `workflows/` and `packages/n8n-nodes-*/` siblings; document cross-references in MOC.
+
+### D — Multi-program monorepo (this repo)
+
+```
+workflows/
+├── complaints/
+├── servicedesk/
+├── daily-checks/
+├── daily-ops/
+└── _shared/                 ← sub-workflows
+lib/
+├── core/ schemas/ simulators/
+├── complaints/ servicedesk/ daily-checks/ daily-ops/
+fixtures/ prompts/ db/ sandbox-services/
+```
+
+One `lib/` namespace; Code nodes import from `lib/index.js` or specific modules.
+
+### Sandbox boundaries
+
+All runtime writes stay under `N8N_DATA_ROOT`. HTTP calls allowed only to `http://localhost` mock-api when explicitly enabled. See [[governance/sandbox-boundaries]].
+
+### Simulacrum rule
+
+No production endpoints in POC. Every external integration has an entry in [[integrations/catalog]] plus a simulator under `lib/simulators/` or `sandbox-services/`.
+
+### Schema-first
+
+Normalize inbound artifacts to canonical schemas (`lib/schemas/`) before side effects. Append lifecycle events before external posts (CRM, ticketing, email).
+
+### Prompts in repo
+
+Version prompt templates under `prompts/`; reference by path from lib. No API keys in prompt files.
+
+
+| Rule | Detail |
+|------|--------|
+| Workflow JSON in git | Export from editor; review diff like code |
+| No secrets in JSON | Remove credential IDs/values before commit; use [[credentials/catalog]] |
+| `.n8n/` gitignored | Runtime DB, encryption keys — never commit |
+| `credentials/` in git | **Empty** — `.gitkeep` only; local exports gitignored |
+| Pin n8n version | README + workflow notes |
+| One workflow file per workflow | Name matches vault note `workflows/<name>.md` |
+
+---
+
+## Workflow design
+
+### Workflow scope
+
+| Principle | Detail |
+|-----------|--------|
+| One outcome per workflow | Split unrelated automations |
+| Sub-workflows | Use **Execute Workflow** for shared sequences (validation, enrichment, notify) |
+| Error workflows | Use **Error Trigger** workflow for centralized alerting/logging when appropriate |
+| Size | If canvas exceeds ~15–20 nodes, consider split or sub-workflow |
+
+### Trigger selection
+
+| Use case | Prefer |
+|----------|--------|
+| External event | Webhook (production URL documented, not committed) |
+| Scheduled batch | Schedule Trigger |
+| File drop | Local File Trigger (local/sandbox) or polling pattern |
+| Manual / demo | Manual Trigger |
+| Downstream of another flow | Execute Workflow Trigger |
+
+Document trigger mode and activation requirements in the workflow vault note.
+
+### Node selection (built-in first)
+
+| Task | Prefer | Avoid |
+|------|--------|-------|
+| Field mapping / rename | **Set** | Code that only copies fields |
+| Conditional route | **IF** or **Switch** | Code with if/else chains |
+| Multi-rule route | **Switch** | Nested IFs |
+| HTTP call | **HTTP Request** | Code `fetch` unless unsupported |
+| JSON parse/stringify | **Set** / built-in expressions | Code |
+| Merge streams | **Merge** | Code concatenation |
+| Loop over items | **Split In Batches** / n8n item model | Manual loops in Code when avoidable |
+| Custom domain logic | **lib/** + thin Code, or **custom node** | Large Code blocks |
+
+### Node display names
+
+State intent: `Validate payload`, `Fetch customer`, `Map to CRM shape`.
+
+Avoid defaults: `Code`, `IF`, `HTTP Request1`.
+
+### Sticky notes
+
+Every production workflow: top sticky with purpose + link to vault note `[[workflows/<name>]]`.
+
+### Item model
+
+- Understand **one item = one output row** from upstream nodes.
+- Preserve **paired item** metadata when using Merge and sub-workflows where traceability matters.
+- Document expected `$json` shape at workflow input in vault note.
+- Binary data: document property name; use Move Binary Data / explicit binary handling — do not assume text.
+
+### Expressions
+
+- Use expressions (`{{ }}`) for simple field access and transforms n8n supports natively.
+- Extract complex, reused expressions to **Set** node outputs or `lib/` — do not duplicate the same expression in five nodes.
+
+---
+
+## Code nodes
+
+Use Code nodes when built-in nodes cannot express the logic cleanly.
+
+### Rules
+
+| Rule | Detail |
+|------|--------|
+| Thin Code | Map `$input.all()` ↔ `lib/` functions; return `[{ json: ... }]` |
+| Mode | Prefer **Run Once for All Items** or **Run Once for Each Item** deliberately — document choice |
+| No secrets in code | Read from credentials or env via n8n patterns — not hardcoded |
+| Return shape | Always return array of `{ json: {...} }` (and `binary` if needed) |
+| Errors | `throw new Error('clear message')` or custom node `NodeOperationError` — no catch-and-ignore |
+| Size | Under ~30 lines per Code node; extract helpers |
+| Require path | Document how Code resolves `lib/` (absolute path, `NODE_PATH`, or package) |
+
+```javascript
+// Thin Code node — logic in lib/
+const { normalizeRecord } = require('/path/to/lib/normalize');
+const items = $input.all();
+return items.map((item) => ({
+  json: normalizeRecord(item.json),
+}));
+```
+
+### When to escalate to a custom node
+
+- Logic reused across many workflows or teams
+- Needs credential test, dynamic properties, or resource routing
+- Complex API pagination / listing patterns
+- You want jest tests against `INodeType.execute()` with n8n mocks
+
+See [[N8N-CODEBASE-DOCUMENTATION#Custom node / package notes]].
+
+---
+
+## Custom community nodes
+
+### INodeType structure
+
+- **`description`** — `displayName`, `name`, `group`, `version`, `inputs`, `outputs`, `properties`, `credentials` (if any).
+- **`execute`** — orchestration only; delegate to imported modules.
+- **Version** — bump `description.version` on breaking property changes; document in CHANGELOG.
+
+### ICredentialType
+
+- Separate file per credential type.
+- `test` request should hit a safe endpoint (sandbox), not production.
+- Never log credential values.
+
+### Build and install
+
+```bash
+npm install
+npm run build          # gulp / tsc per package template
+npm link               # local dev into n8n custom nodes directory
+```
+
+Document exact steps in [[guides/getting-started]].
+
+### Errors in custom nodes
+
+Use n8n's error types — fail loud with context:
+
+```typescript
+import { NodeOperationError } from 'n8n-workflow';
+
+throw new NodeOperationError(this.getNode(), 'orderId is required', {
+  itemIndex: i,
+});
+```
+
+Do not return empty items to mean failure.
+
+---
+
+## Single responsibility
+
+### Workflows
+
+- Trigger + main path + **documented** error path.
+- Do not mix unrelated schedules and webhooks in one JSON without ADR.
+
+### Nodes on canvas
+
+- One node = one step (fetch, map, branch, persist).
+- Do not validate + transform + HTTP POST in a single Code node.
+
+### `lib/` and package modules
+
+- One function = one rule or transform.
+- Target under 25 lines; compose in workflow or execute().
+
+---
+
+## DRY
+
+| Duplication | Action |
+|-------------|--------|
+| Same Code in two workflows | `lib/` module or sub-workflow |
+| Same HTTP + map sequence | Sub-workflow or custom node |
+| Same credential + base URL | Credential type + HTTP Request node defaults |
+| Same Switch rules | Switch node with shared expressions or lib helper |
+
+If you copy-paste more than two lines of logic between workflows, extract.
+
+---
+
+## Happy path and fail fast
+
+### Philosophy
+
+Implement the **correct path** for valid items. Invalid input and operational failures must be **visible** — routed to an error branch, Error Trigger workflow, or thrown error — not dropped silently.
+
+| Situation | Response |
+|-----------|----------|
+| Invalid input item | IF branch to error output, or throw in Code / `NodeOperationError` |
+| HTTP 4xx/5xx | Document: Error branch, Continue On Fail + IF, or stop workflow |
+| Missing credential | Fail at configure time; document type in [[credentials/catalog]] |
+| Partial batch failure | Split In Batches + document per-item error handling |
+| Bug in lib/ | Fix lib/; do not patch only on canvas |
+
+### Continue On Fail
+
+- **Default: off** for nodes where failure must block downstream work.
+- If enabled: **must** document in workflow note and handle error output explicitly (IF on `$json.error` or equivalent).
+- Never enable globally to "make it work" without an error path.
+
+### Guard validation early
+
+Validate at workflow entry (IF, Filter, or validation sub-workflow) before side effects (HTTP POST, file write, DB).
+
+---
+
+## Credentials and secrets
+
+| Rule | Detail |
+|------|--------|
+| Never in git | No API keys, tokens, passwords in workflow JSON, Code, or vault |
+| Credential store | Values only in n8n credential UI / secret manager |
+| Export hygiene | Strip `credentials` object IDs before commit or use env-specific imports |
+| Sandbox | Mock, httpbin, local files — document in [[credentials/catalog]] |
+| Custom credential types | `ICredentialType` + test request; document fields, not values |
+
+---
+
+## Comments
+
+| Use for | Not for |
+|---------|---------|
+| n8n item/binary quirks | Restating Set node field list |
+| Why sub-workflow vs inline | Commented-out nodes (delete them) |
+| Link to vault ADR | Credential values |
+
+**Sticky notes + vault** = workflow narrative. **JSDoc/TSDoc** = `lib/` and package API.
+
+---
+
+## Dependencies and tooling
+
+**Do not rely on global npm installs for project tooling.** Use repo-local `node_modules/` via entrypoint or documented `npm install`.
+
+| Rule | Detail |
+|------|--------|
+| `node_modules/` | Gitignored |
+| `package.json` | DevDependencies, test/build scripts |
+| Global `npm install -g` | **Forbidden** for this repo's tools |
+| n8n runtime | Operator starts n8n; repo holds JSON and packages |
+
+### Entrypoint: `scripts/run.ps1`
+
+All **test**, **build**, and **helper** commands go through the entrypoint when the repo defines one:
+
+1. Resolve repo root from script location.
+2. Run `npm install` if `node_modules/` missing or lockfile/package changed.
+3. Execute with local binaries (`node`, `npm run`, etc.).
+
+```powershell
+.\scripts\run.ps1 test
+.\scripts\run.ps1 build
+```
+
+README examples use the entrypoint — not bare global commands.
+
+---
+
+## Testing
+
+### Strategy by artefact type
+
+| Artefact | How to test |
+|----------|-------------|
+| `lib/` helpers | Automated unit tests (required) |
+| Custom node package | **Jest** + n8n node test patterns / mocked `IExecuteFunctions` |
+| Workflow JSON | Manual checklist in vault note; optional static JSON lint |
+| Expressions / Set mappings | Documented examples in workflow note; spot-check in editor |
+
+Pick **one** test runner per repo and document in `docs/vault/testing/strategy.md`.
+
+### `lib/` — Node.js `node:test` or Jest
+
+**Workflow repos** with `lib/` often use `node:test` (zero config). **Community node packages** use **Jest** per n8n template.
+
+```json
+{
+  "scripts": {
+    "test": "node --test tests/**/*.test.js"
+  }
+}
+```
+
+or
+
+```json
+{
+  "scripts": {
+    "test": "jest"
+  }
+}
+```
+
+Run via `.\scripts\run.ps1 test` or `npm test`.
+
+### What to test in `lib/` (mandatory)
+
+Every exported function:
+
+- Happy path
+- Failure path (invalid input, missing fields) where failures are defined
+- Edge cases for domain rules
+
+Tests must be **deterministic** — no live network; mock HTTP at workflow level, not in unit tests unless testing a thin client in lib.
+
+### Custom node tests
+
+- Property routing / execute behaviour for representative inputs
+- Error cases throw `NodeOperationError` or documented error
+- Credential test defined and sandbox-safe
+
+### Workflow verification (manual)
+
+Workflow note **Manual test checklist** must include:
+
+1. Import JSON
+2. Configure credential **types** (sandbox values)
+3. Activate if webhook/schedule
+4. Trigger with sample payload or Manual Trigger
+5. Assert expected output items / side effects
+6. Trigger error path once
+
+### What makes a good test
+
+| Good | Bad |
+|------|-----|
+| One behaviour per test | Single test for entire workflow in jest |
+| Descriptive name | `test1` |
+| Pure lib/ I/O | Requires production n8n + credentials |
+| Fixtures for sample items | Copy of full workflow JSON in every test |
+| Sandbox URLs only | Hardcoded prod endpoints |
+
+### Coverage expectations
+
+| Scope | Target |
+|-------|--------|
+| `lib/` exported functions | **100%** of exports covered; **≥ 90%** line coverage |
+| Custom node `execute` helpers | Critical paths + error paths |
+| Workflow JSON / canvas wiring | Manual checklist; not line-coverage tested |
+| Thin Code nodes | Covered via `lib/` tests |
+
+Optional: `c8`, `jest --coverage`, or `nyc` — document command in [[testing/strategy]].
+
+---
+
+## Pre-commit checklist
+
+- [ ] Built-in nodes preferred; Code nodes thin
+- [ ] DRY — no duplicated logic across workflows
+- [ ] Error paths documented; no silent Continue On Fail
+- [ ] No credentials/secrets in diff
+- [ ] Node display names + stickies updated
+- [ ] Target n8n version noted if nodes changed
+- [ ] `npm test` / `.\scripts\run.ps1 test` passes
+- [ ] Vault notes + workflow notes updated
+- [ ] `git diff` reviewed
+
+---
+
+## Git workflow
+
+```powershell
+git status
+git diff
+.\scripts\run.ps1 test    # or npm test / npm run build
+git add <files>
+git commit -m "feat: concise message describing why"
+git status
+```
+
+Commit only when tests pass (where applicable), build succeeds (packages), and docs match artefacts.
+
+---
+
+## Quick reference
+
+| Topic | Rule |
+|-------|--------|
+| Canvas | Built-in nodes first; one step per node |
+| Logic | `lib/` or custom node package — tested |
+| Items | Document `$json` / binary contracts |
+| Errors | Fail loud; explicit error branch or Error Trigger |
+| Credentials | Types in docs; values never in git |
+| Version | Pin target n8n version |
+| Vault | `docs/vault/` — [[N8N-CODEBASE-DOCUMENTATION]] |
+| Tests | lib/ + packages automated; workflows manual checklist |
+
+---
+
+## Related
+
+- [[N8N-CODEBASE-DOCUMENTATION]] — vault layout, workflow notes, credentials catalog
+- [[guides/getting-started]] — bootstrap (create per project)
+- [[guides/import-and-test]] — operator steps (create per project)
+- [[testing/strategy]] — runner choice and coverage (create per project)
+- [[architecture/overview]] — per-project (create when building)
