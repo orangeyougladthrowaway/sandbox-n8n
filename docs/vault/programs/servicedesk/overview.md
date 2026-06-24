@@ -20,15 +20,17 @@ Simulate an **L1 service desk bot technician** (`bot-l1-sandbox`) that:
 
 ## Workflows
 
-| Workflow | Role |
-|----------|------|
-| [[workflows/servicedesk/sd-queue-poller]] | Poll API, pick next ticket |
-| [[workflows/servicedesk/sd-intake]] | Normalize + persist |
-| [[workflows/servicedesk/sd-classify-triage]] | Classify, triage, KB |
-| [[workflows/servicedesk/sd-bot-reply]] | Bot chat outbound |
-| [[workflows/servicedesk/sd-await-user]] | Inbound chat poll |
-| [[workflows/servicedesk/sd-handoff-technician]] | Unassign bot, assign human |
-| [[workflows/servicedesk/sd-existing-ticket-refresh]] | Re-run classify/KB on update |
+| Workflow | Doc |
+|----------|-----|
+| `sd-queue-poller` | [[workflows/servicedesk/sd-queue-poller]] |
+| `sd-intake` | [[workflows/servicedesk/sd-intake]] |
+| `sd-classify-triage` | [[workflows/servicedesk/sd-classify-triage]] |
+| `sd-bot-reply` | [[workflows/servicedesk/sd-bot-reply]] |
+| `sd-await-user` | [[workflows/servicedesk/sd-await-user]] |
+| `sd-handoff-technician` | [[workflows/servicedesk/sd-handoff-technician]] |
+| `sd-existing-ticket-refresh` | [[workflows/servicedesk/sd-existing-ticket-refresh]] |
+
+Full index: [[workflows/00-workflows-index]]. n8n testing: [[guides/workflow-testing]].
 
 ## Lib
 

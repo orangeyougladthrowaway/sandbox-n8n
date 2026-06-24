@@ -1,27 +1,46 @@
-# Complaints intake workflow
+# Complaints Intake
 
 #n8n #workflow #complaints
 
+## File
+
+`workflows/complaints/complaints-intake.json`
+
 ## Purpose
-Demonstrate complaints intake: copy fixture → full lib pipeline → return classified record.
+
+Full complaints pipeline: copy angry-support fixture → normalize → classify → route → notify.
 
 ## Trigger
-Manual Trigger (POC).
 
-## Node chain
-1. Manual Trigger
-2. Process fixture complaint (Code → `lib/complaints/pipeline.js`)
+Manual Trigger (POC). Production would use Schedule / file watch / webhook per program.
 
-## Sandbox
+## Flow
 
-- Writes only under `N8N_DATA_ROOT` (`inbound/`, `_runtime/`, `outbound/sent/`)
-- HTTP to mock-api only when `N8N_MOCK_API_ENABLED=1` (otherwise in-process sim refs)
-- Completes without mock-api running
+```mermaid
+flowchart TD
+  T[Manual Trigger] --> C[Copy fixture to inbound/mailbox]
+  C --> P[processComplaintFile]
+  P --> N[normalize]
+  N --> CL[classify]
+  CL --> R[route + notify]
+  R --> OUT[ComplaintRecord JSON]
+```
 
-## Manual test
+## Lib calls
 
-1. `.\scripts\run.ps1 n8n` (optional: `mock-api` in another terminal)
-2. Import workflow; execute manually
-3. Inspect output `json` for classification and `ticket_ref`
+`processComplaintFile`, `FileComplaintStore`
 
-See [[governance/sandbox-boundaries]].
+## Success criteria
+
+`classification.category` present; `ticket_ref` set; `_runtime/complaints-db.json` updated; email sim in `outbound/sent/`.
+
+All writes stay under `N8N_DATA_ROOT`. See [[governance/sandbox-boundaries]].
+
+## CLI equivalent
+
+``.\scripts\run.ps1 smoke-complaints` or `process-complaints``
+
+## Related
+
+- [[workflows/00-workflows-index]]
+- [[workflows/data-flow]]

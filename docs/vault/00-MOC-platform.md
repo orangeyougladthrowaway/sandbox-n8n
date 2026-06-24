@@ -33,3 +33,9 @@ Standards: [[N8N-CODING-PRINCIPLES]] · [[N8N-CODEBASE-DOCUMENTATION]]
 - [[governance/sandbox-boundaries]]
 - [[governance/sandbox-vs-prod]]
 - [[integrations/catalog]]
+
+## Workflows
+
+- [[workflows/00-workflows-index]] — all 22 workflows with diagrams
+- [[workflows/data-flow]] — program-level architecture
+- [[guides/workflow-testing]] — n8n execution verification guide

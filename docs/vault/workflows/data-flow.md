@@ -64,6 +64,7 @@ flowchart TD
 
 ## Related
 
+- [[workflows/00-workflows-index]]
 - [[integrations/catalog]]
 - [[architecture/decisions/009-unified-ticket-api]]
 - [[programs/servicedesk/overview]]

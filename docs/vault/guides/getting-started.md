@@ -67,6 +67,6 @@ Open `docs/vault/` in Obsidian. Start at [[00-MOC-platform]].
 
 ## Related
 
-- [[guides/native-runtime]]
+- [[workflows/00-workflows-index]]
+- [[guides/workflow-testing]]
 - [[testing/strategy]]
-- [[programs/servicedesk/overview]]

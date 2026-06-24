@@ -59,6 +59,7 @@ Open http://localhost:5678 · Mock API: http://localhost:3099/health
 | `workflows/` | Thin n8n JSON + `workflows/_shared/` |
 | `fixtures/` | Sample inputs per program |
 | `sandbox-services/server.js` | Mock API |
-| `docs/vault/` | Obsidian vault — start at `00-MOC-platform.md` |
+| `docs/vault/` | Obsidian vault — start at `00-MOC-platform.md`; workflows at `workflows/00-workflows-index.md` |
 
-Standards: `docs/vault/N8N-CODING-PRINCIPLES`, `N8N-CODEBASE-DOCUMENTATION`.
+Standards: `docs/vault/N8N-CODING-PRINCIPLES`, `N8N-CODEBASE-DOCUMENTATION`.  
+n8n workflow testing: `docs/vault/guides/workflow-testing.md`

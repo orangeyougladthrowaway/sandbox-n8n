@@ -13,11 +13,13 @@
 
 ## Workflows
 
-| Workflow | Role |
-|----------|------|
-| `dc-schedule-run` | Run queries, collect exceptions |
-| `dc-triage-exception` | Triage row + create ticket |
-| `dc-cursor-bundle` | Write investigation bundle |
+| Workflow | Doc |
+|----------|-----|
+| `dc-schedule-run` | [[workflows/daily-checks/dc-schedule-run]] |
+| `dc-triage-exception` | [[workflows/daily-checks/dc-triage-exception]] |
+| `dc-cursor-bundle` | [[workflows/daily-checks/dc-cursor-bundle]] |
+
+Full index: [[workflows/00-workflows-index]]. n8n testing: [[guides/workflow-testing]].
 
 ## Smoke
 

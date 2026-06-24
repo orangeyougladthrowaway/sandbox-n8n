@@ -17,7 +17,7 @@
 |----------|----------|
 | `lib/` exports | Unit tests — happy + failure paths |
 | Program smokes | `tests/program-smoke.test.js` + dedicated smoke scripts |
-| Workflow JSON | Manual checklist; import via `run.ps1 import-workflows` |
+| Workflow JSON | Per-workflow docs in [[workflows/00-workflows-index]]; n8n verification in [[guides/workflow-testing]] |
 | Mock API | Optional manual run; offline smokes use fixtures |
 
 ## Smoke tests (mandatory E2E)
@@ -52,4 +52,6 @@ All smoke trees under `DATA_ROOT/_smoke/` — wiped before and after.
 ## Related
 
 - [[guides/native-runtime]]
+- [[guides/workflow-testing]]
+- [[workflows/00-workflows-index]]
 - [[N8N-CODING-PRINCIPLES#Testing]]

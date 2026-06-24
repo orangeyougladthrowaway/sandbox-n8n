@@ -12,10 +12,12 @@
 
 ## Workflows
 
-| Workflow | Role |
-|----------|------|
-| `do-schedule-run` | Run ops queries |
-| `do-route-owners` | Route + Teams notification |
+| Workflow | Doc |
+|----------|-----|
+| `do-schedule-run` | [[workflows/daily-ops/do-schedule-run]] |
+| `do-route-owners` | [[workflows/daily-ops/do-route-owners]] |
+
+Full index: [[workflows/00-workflows-index]]. n8n testing: [[guides/workflow-testing]].
 
 ## Smoke
 
