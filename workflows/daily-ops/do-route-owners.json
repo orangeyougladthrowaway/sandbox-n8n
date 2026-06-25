@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "0f6986f0-693a-4a01-bd69-b03c507e3444",
+      "id": "c4cbaf58-d57d-439d-a139-3036df3ffb09",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "30270dc8-6f48-43d9-87f8-f89d45e40e45",
+      "id": "3bd69903-064f-42d0-8703-38c8254594ca",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { runOpsQuery, triageOpsTask, writeTeamsNotification } = lib;\nconst row = runOpsQuery('pending-changes').rows[0];\nconst { route } = triageOpsTask(row, []);\nconst file = writeTeamsNotification(row, route, path.join(dataRoot, 'outbound', 'teams'));\nreturn [{ json: { row, route, file } }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { runOpsQuery, triageOpsTask, writeTeamsNotification } = lib;\nconst row = runOpsQuery('pending-changes').rows[0];\nconst { route } = triageOpsTask(row, []);\nconst file = writeTeamsNotification(row, route, path.join(dataRoot, 'outbound', 'teams'));\nreturn [{ json: { row, route, file } }];"
       },
-      "id": "de420f3e-9930-45db-a4ba-2df23c1e578e",
+      "id": "38152b69-ebf2-416a-b639-91775706a7aa",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "do-route-owners",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "daily-ops"
-  ]
+  }
 }

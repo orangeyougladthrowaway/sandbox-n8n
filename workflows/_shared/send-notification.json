@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "8894c8f5-45af-44b0-889a-5916b6c4908c",
+      "id": "15230cc2-f3f8-4b1e-85aa-577e150c0833",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "58c64fdd-69c4-46e1-b981-234cb56cf076",
+      "id": "58aa3568-a44e-47d9-9590-d014e126881c",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst out = path.join(dataRoot, 'outbound', 'sent', 'shared-notify.txt');\nfs.mkdirSync(path.dirname(out), { recursive: true });\nfs.writeFileSync(out, 'notification sim');\nreturn [{ json: { path: out } }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst out = path.join(dataRoot, 'outbound', 'sent', 'shared-notify.txt');\nfs.mkdirSync(path.dirname(out), { recursive: true });\nfs.writeFileSync(out, 'notification sim');\nreturn [{ json: { path: out } }];"
       },
-      "id": "a235beae-6769-43ca-ae54-0d9431fa3f02",
+      "id": "7b488134-67a4-4fe4-8643-1cebcb90a245",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "shared-send-notification",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "shared"
-  ]
+  }
 }

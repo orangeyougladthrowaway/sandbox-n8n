@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "2e35aeaf-f67a-4a8e-a3ab-cb69de1b0ff5",
+      "id": "e61da7e6-aff8-4973-bb57-3503d149b2e6",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "ab324292-10be-422c-988e-59e78f16771e",
+      "id": "5c652537-d4ec-4008-9bf5-54a0bd84d812",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst { FileComplaintStore, processReplyFile, createComplaintRecord } = lib;\nconst db = path.join(dataRoot, '_runtime', 'complaints-reply-demo.json');\nconst store = new FileComplaintStore(db);\nstore.upsertComplaint(createComplaintRecord({ id: 'cmp_reply', thread_id: 'thread-reply-demo' }));\nconst reply = path.join(dataRoot, 'inbound', 'mailbox', 'replies', 'demo-reply.eml');\nfs.mkdirSync(path.dirname(reply), { recursive: true });\nfs.writeFileSync(reply, 'Thread-ID: thread-reply-demo\\n\\nStill unhappy');\nreturn [{ json: processReplyFile(reply, store) }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { FileComplaintStore, processReplyFile, createComplaintRecord } = lib;\nconst db = path.join(dataRoot, '_runtime', 'complaints-reply-demo.json');\nconst store = new FileComplaintStore(db);\nstore.upsertComplaint(createComplaintRecord({ id: 'cmp_reply', thread_id: 'thread-reply-demo' }));\nconst reply = path.join(dataRoot, 'inbound', 'mailbox', 'replies', 'demo-reply.eml');\nfs.mkdirSync(path.dirname(reply), { recursive: true });\nfs.writeFileSync(reply, 'Thread-ID: thread-reply-demo\\n\\nStill unhappy');\nreturn [{ json: processReplyFile(reply, store) }];"
       },
-      "id": "fc9cea07-a477-4f69-9a0e-0c136ced2df1",
+      "id": "a4ef0f69-958f-4643-9696-0a8da5cf0fbe",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "complaints-monitor-replies",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "complaints"
-  ]
+  }
 }

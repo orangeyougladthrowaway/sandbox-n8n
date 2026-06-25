@@ -17,7 +17,7 @@
 |----------|----------|
 | `lib/` exports | Unit tests — happy + failure paths |
 | Program smokes | `tests/program-smoke.test.js` + dedicated smoke scripts |
-| Workflow JSON | Per-workflow docs in [[workflows/00-workflows-index]]; n8n verification in [[guides/workflow-testing]] |
+| Workflow JSON | Per-workflow docs in [[workflows/00-workflows-index]]; optional n8n CLI smokes via `run.ps1 smoke-n8n` |
 | Mock API | Optional manual run; offline smokes use fixtures |
 
 ## Smoke tests (mandatory E2E)
@@ -29,10 +29,11 @@
 | `run.ps1 smoke-daily-checks` | 2 queries → tickets + cursor bundles |
 | `run.ps1 smoke-daily-ops` | 2 queries → Teams JSON |
 | `run.ps1 demo` | All four smokes |
+| `run.ps1 smoke-n8n` | All 22 workflows via `n8n execute` (requires global n8n@1.80.0; ~60s first-run DB init) |
 
 All smoke trees under `DATA_ROOT/_smoke/` — wiped before and after.
 
-## Test files (80+ tests)
+## Test files (84 tests)
 
 | File | Module |
 |------|--------|
@@ -48,6 +49,7 @@ All smoke trees under `DATA_ROOT/_smoke/` — wiped before and after.
 | `tests/daily-checks.test.js` | daily checks |
 | `tests/daily-ops.test.js` | daily ops |
 | `tests/program-smoke.test.js` | all program smokes |
+| `tests/n8n-workflows.test.js` | n8n CLI workflow smokes (skipped if n8n not installed) |
 
 ## Related
 

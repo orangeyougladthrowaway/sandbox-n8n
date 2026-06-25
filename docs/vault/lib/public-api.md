@@ -15,7 +15,7 @@ Testable business logic for all programs. Tests in `tests/*.test.js`. Sandbox ru
 | `CURSOR_REQUESTS` | Daily checks Cursor bundles |
 | `DEFAULT_BOT_TECH_ID` | Bot persona (`bot-l1-sandbox`) |
 | `FIXTURES_DIR`, `WORKFLOWS_DIR`, `DB_QUERIES_DIR` | Repo-relative paths |
-| `libImportUrl()` | `file://` URL to `lib/index.js` |
+| `libImportUrl()` | Legacy `file://` URL helper — Code nodes use `require()` + `lib.DATA_ROOT` (see [[N8N-CODING-PRINCIPLES#Code nodes]]) |
 
 ## lib/core/sandbox.js · http.js · db.js
 

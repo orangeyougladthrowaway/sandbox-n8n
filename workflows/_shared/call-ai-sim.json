@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "f3b56b0e-ee64-4185-86d7-87e98a39190d",
+      "id": "a040dd26-dc72-453a-8203-cb08b00161b0",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "a84defe0-35e9-48b8-b114-86dd9c973699",
+      "id": "2a226bee-8e6b-4937-ad4d-7d5732a9b306",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { analyzeText } = lib;\nreturn [{ json: analyzeText('subject access request') }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { analyzeText } = lib;\nreturn [{ json: analyzeText('subject access request') }];"
       },
-      "id": "a5e98a5d-2991-49ee-8372-a224e525eac7",
+      "id": "1b667b3e-ae9c-4cbf-9401-cab0581837b9",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "shared-call-ai-sim",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "shared"
-  ]
+  }
 }

@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "23ea6ce0-1f90-45ba-9346-709b3f020b8c",
+      "id": "589ee0c5-1fa3-46b6-b9a3-e6d378561636",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "5a7db974-fff3-4454-b238-567b40ca8e6b",
+      "id": "7e73191d-0ee5-412c-9241-538969e52954",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst { normalizeInboundArtifact, classifyComplaint } = lib;\nconst fp = path.join(repoRoot, 'fixtures', 'complaints', 'formal-dsar.eml');\nconst record = classifyComplaint(normalizeInboundArtifact(fp, fs.readFileSync(fp, 'utf8')));\nreturn [{ json: record }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { normalizeInboundArtifact, classifyComplaint } = lib;\nconst fp = path.join(repoRoot, 'fixtures', 'complaints', 'formal-dsar.eml');\nconst record = classifyComplaint(normalizeInboundArtifact(fp, fs.readFileSync(fp, 'utf8')));\nreturn [{ json: record }];"
       },
-      "id": "0f764078-8cfc-4ec2-acf7-0a8d12e57403",
+      "id": "e6d7424c-8623-44a5-a4f6-1ccd7b61ecd2",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "complaints-classify",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "complaints"
-  ]
+  }
 }

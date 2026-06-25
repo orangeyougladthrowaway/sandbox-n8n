@@ -48,6 +48,11 @@ function Set-SandboxEnv {
     $env:MOCK_API_BASE_URL = if ($env:MOCK_API_BASE_URL) { $env:MOCK_API_BASE_URL } else { 'http://localhost:3099' }
 }
 
+function Set-N8nCodeEnv {
+    $env:NODE_FUNCTION_ALLOW_BUILTIN = 'path,fs,url,module'
+    $env:NODE_FUNCTION_ALLOW_EXTERNAL = 'module'
+}
+
 function Enable-MockApiIfRunning {
     try {
         Invoke-RestMethod -Uri "$($env:MOCK_API_BASE_URL)/health" -TimeoutSec 2 | Out-Null
@@ -111,19 +116,25 @@ switch ($Command.ToLower()) {
     'import-workflows' {
         Ensure-NodeOnPath
         Ensure-NpmGlobalOnPath
+        Set-N8nCodeEnv
         if (-not (Get-Command n8n -ErrorAction SilentlyContinue)) {
             throw 'n8n CLI not found. Install: npm install -g n8n@1.80.0'
         }
-        Get-ChildItem -Path (Join-Path $RepoRoot 'workflows') -Filter '*.json' -Recurse | ForEach-Object {
-            Write-Host "Import: $($_.FullName)"
-            n8n import:workflow --input=$($_.FullName)
-        }
-        Write-Host 'Workflows imported into local n8n.'
+        & node (Join-Path $PSScriptRoot 'import-workflows.js')
+    }
+    'smoke-n8n' {
+        Ensure-NodeOnPath
+        Ensure-NpmGlobalOnPath
+        Ensure-NpmInstall
+        Set-SandboxEnv
+        Set-N8nCodeEnv
+        & node (Join-Path $PSScriptRoot 'n8n-smoke.js')
     }
     'n8n' {
         Ensure-NodeOnPath
         Ensure-NpmGlobalOnPath
         Set-SandboxEnv
+        Set-N8nCodeEnv
         Enable-MockApiIfRunning
         if (-not (Get-Command n8n -ErrorAction SilentlyContinue)) {
             throw 'n8n CLI not found. Install: npm install -g n8n@1.80.0'
@@ -154,7 +165,7 @@ switch ($Command.ToLower()) {
     default {
         Write-Error @"
 Unknown command: $Command
-Use: test, demo, smoke-complaints, smoke-servicedesk, smoke-daily-checks, smoke-daily-ops,
+Use: test, demo, smoke-complaints, smoke-servicedesk, smoke-daily-checks, smoke-daily-ops, smoke-n8n,
      process-complaints, process-servicedesk, mock-api, import-workflows, n8n
 "@
     }

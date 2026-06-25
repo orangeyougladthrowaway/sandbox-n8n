@@ -126,9 +126,12 @@ Check mock-api: `Invoke-RestMethod http://localhost:3099/health`
 ## Automated regression
 
 ```powershell
-.\scripts\run.ps1 test   # 83 unit/smoke tests — no n8n
-.\scripts\run.ps1 demo   # all program smokes
+.\scripts\run.ps1 test        # unit + lib smokes (n8n test skipped if CLI missing)
+.\scripts\run.ps1 demo        # all program smokes
+.\scripts\run.ps1 smoke-n8n    # all 22 workflows via n8n CLI (optional; needs n8n@1.80.0)
 ```
+
+**n8n CLI smoke notes:** isolated under `DATA_ROOT/_smoke/n8n/`. First run on a fresh `N8N_USER_FOLDER` runs SQLite migrations (~30–60s) — not a hang. Code nodes use `require()` not `import()`; set `NODE_FUNCTION_ALLOW_BUILTIN` and `N8N_RUNNERS_ENABLED=false` for CLI execute (see [[N8N-CODING-PRINCIPLES#Code nodes]]).
 
 ## Related
 

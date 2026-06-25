@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "de52977e-3297-499a-bc57-b2721d3d8b70",
+      "id": "95ddd6ef-9cbc-4332-ab7d-2c70cacc1edd",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "5bc590f5-4591-464a-b037-6669287b3c17",
+      "id": "e3594a0a-8fc4-46a2-94f2-8b7d3cab4bf9",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { runCheckQuery, triageException, writeCursorBundle, newCheckRunId } = lib;\nconst row = runCheckQuery('null-required-fields').rows[0];\nconst { triage, summary } = triageException(row);\nconst dir = writeCursorBundle({ checkRunId: newCheckRunId(), row, triage, summary, outRoot: path.join(dataRoot, 'cursor-requests') });\nreturn [{ json: { bundle_dir: dir } }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { runCheckQuery, triageException, writeCursorBundle, newCheckRunId } = lib;\nconst row = runCheckQuery('null-required-fields').rows[0];\nconst { triage, summary } = triageException(row);\nconst dir = writeCursorBundle({ checkRunId: newCheckRunId(), row, triage, summary, outRoot: path.join(dataRoot, 'cursor-requests') });\nreturn [{ json: { bundle_dir: dir } }];"
       },
-      "id": "1ef37f2a-9732-4d58-9eac-5a752abc92bc",
+      "id": "6253c4c8-85c2-4185-b8b1-b2ceec261532",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "dc-cursor-bundle",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "daily-checks"
-  ]
+  }
 }

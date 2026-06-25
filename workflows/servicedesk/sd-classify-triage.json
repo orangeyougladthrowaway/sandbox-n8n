@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "5778c41e-a3a9-4fbb-82ae-b0c47984b91d",
+      "id": "6e332e25-97c3-44b6-a236-5a39eb53001e",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "4bafee69-20d3-499a-9927-d343b183b0ed",
+      "id": "8ab74885-9b7e-4581-ae2c-c66f57ab78cb",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst { normalizeTicketPayload, classifyTicket, triageTicket, analyzeKb } = lib;\nlet t = normalizeTicketPayload(JSON.parse(fs.readFileSync(path.join(repoRoot, 'fixtures', 'servicedesk', 'tickets', 'vague-vpn.json'), 'utf8')));\nt = classifyTicket(t, { fixtureId: 'vague-vpn' });\nt = triageTicket(t);\nt = await analyzeKb(t, { skipHttp: true });\nreturn [{ json: t }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { normalizeTicketPayload, classifyTicket, triageTicket, analyzeKb } = lib;\nlet t = normalizeTicketPayload(JSON.parse(fs.readFileSync(path.join(repoRoot, 'fixtures', 'servicedesk', 'tickets', 'vague-vpn.json'), 'utf8')));\nt = classifyTicket(t, { fixtureId: 'vague-vpn' });\nt = triageTicket(t);\nt = await analyzeKb(t, { skipHttp: true });\nreturn [{ json: t }];"
       },
-      "id": "3780d18a-55f2-497e-90b6-e09a44aae030",
+      "id": "35f68f16-9aea-4b02-bef4-aa4b21d260e0",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "sd-classify-triage",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "servicedesk"
-  ]
+  }
 }

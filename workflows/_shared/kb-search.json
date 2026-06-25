@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "2e775df9-d481-4596-89fc-9c5282334902",
+      "id": "48bd2e7f-f5f8-4c2b-9671-4e2412f9b947",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "3835c8c3-9fb6-4ccb-b31f-84560ebfd0c0",
+      "id": "5dbe2836-db62-4476-8012-083e734240b8",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { searchKbFixtures } = lib;\nreturn [{ json: { items: searchKbFixtures('vpn') } }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { searchKbFixtures } = lib;\nreturn [{ json: { items: searchKbFixtures('vpn') } }];"
       },
-      "id": "53b5ac25-d5a6-4348-88fc-af97bc023f6b",
+      "id": "846ad37f-513c-4d35-9717-69055c926585",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "shared-kb-search",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "shared"
-  ]
+  }
 }

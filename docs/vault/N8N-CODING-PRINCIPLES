@@ -197,14 +197,23 @@ Use Code nodes when built-in nodes cannot express the logic cleanly.
 | Return shape | Always return array of `{ json: {...} }` (and `binary` if needed) |
 | Errors | `throw new Error('clear message')` or custom node `NodeOperationError` — no catch-and-ignore |
 | Size | Under ~30 lines per Code node; extract helpers |
-| Require path | Document how Code resolves `lib/` (absolute path, `NODE_PATH`, or package) |
+| Require path | `require()` + `createRequire` from repo `package.json` — **not** dynamic `import()` (blocked in n8n sandbox) |
+| Paths in Code | Use `lib.REPO_ROOT` / `lib.DATA_ROOT` after require — `process.env.N8N_DATA_ROOT` is not reliably visible inside the Code sandbox |
+| CLI execute | Set `N8N_RUNNERS_ENABLED=false` — `true` hangs `n8n execute` waiting for task runners |
+| Import JSON | No `tags` string arrays; use `n8n import:workflow --separate --input=workflows/` |
 
 ```javascript
-// Thin Code node — logic in lib/
-const { normalizeRecord } = require('/path/to/lib/normalize');
+// Thin Code node — logic in lib/ (n8n 1.80 sandbox-safe)
+const path = require('path');
+const fs = require('fs');
+const { createRequire } = require('module');
+const req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));
+const lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));
+const repoRoot = lib.REPO_ROOT;
+const dataRoot = lib.DATA_ROOT;
 const items = $input.all();
 return items.map((item) => ({
-  json: normalizeRecord(item.json),
+  json: lib.normalizeRecord(item.json),
 }));
 ```
 

@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "6fb492bf-6a55-40e8-8a9c-5c8579b73864",
+      "id": "f98743cc-df21-4646-b04b-522523174078",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "5b5a301f-d40c-4a13-bfb5-58a7687b7924",
+      "id": "740ebe75-ce80-49eb-b84b-3bf32ecdce62",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { runCheckQuery } = lib;\nreturn [{ json: runCheckQuery('stale-pipeline') }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { runCheckQuery } = lib;\nreturn [{ json: runCheckQuery('stale-pipeline') }];"
       },
-      "id": "72bfa221-2e43-40ae-9805-f5618b24f870",
+      "id": "cb96dd19-32f2-45ef-9ced-f46432e760d4",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "dc-schedule-run",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "daily-checks"
-  ]
+  }
 }

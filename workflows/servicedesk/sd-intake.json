@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "28d9e870-1b0c-4d07-9ec0-3a0a67603a63",
+      "id": "c952432e-3a82-4a4a-81f4-bff1d32a8344",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "f6a1b049-64a7-493a-a424-b79614efaf81",
+      "id": "7ad1acbc-c27e-4348-b712-6fd9ef85f8ec",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst { normalizeTicketPayload } = lib;\nconst raw = JSON.parse(fs.readFileSync(path.join(repoRoot, 'fixtures', 'servicedesk', 'tickets', 'vague-vpn.json'), 'utf8'));\nreturn [{ json: normalizeTicketPayload(raw) }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { normalizeTicketPayload } = lib;\nconst raw = JSON.parse(fs.readFileSync(path.join(repoRoot, 'fixtures', 'servicedesk', 'tickets', 'vague-vpn.json'), 'utf8'));\nreturn [{ json: normalizeTicketPayload(raw) }];"
       },
-      "id": "7a46342a-73a7-4c7d-901a-829655c306e5",
+      "id": "fac72888-791e-4508-8c32-bb8d9c900bf6",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "sd-intake",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "servicedesk"
-  ]
+  }
 }

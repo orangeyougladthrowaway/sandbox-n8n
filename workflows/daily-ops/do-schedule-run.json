@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "d785a68b-7a5c-465d-b316-f67f8d81985b",
+      "id": "ef3b6f45-4495-4585-8f3b-dee6b107669b",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "6b864f37-f70b-40a9-b392-eda58f273ea8",
+      "id": "d2b241aa-1952-46f4-870e-0a3809c9cff7",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { runOpsQuery } = lib;\nreturn [{ json: runOpsQuery('open-incidents') }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { runOpsQuery } = lib;\nreturn [{ json: runOpsQuery('open-incidents') }];"
       },
-      "id": "6f4bb2b7-13bb-45c6-85fe-c5387ddb710d",
+      "id": "9ad5ebad-d1a0-40f9-bdc4-64d8a47f221f",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "do-schedule-run",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "daily-ops"
-  ]
+  }
 }

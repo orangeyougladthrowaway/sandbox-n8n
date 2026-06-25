@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "d0c9bd62-6ef2-47b1-85ba-9678253c1b6d",
+      "id": "f6caa3b3-0ec6-4451-8681-6de1c7706eb9",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "e06f29f9-900f-4b51-9a3d-c3be22838554",
+      "id": "a3d06359-a619-4bfe-addd-b91ddf58387e",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { logEvent } = lib;\nreturn [{ json: logEvent('workflow', 'shared_event', { ok: true }) }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { logEvent } = lib;\nreturn [{ json: logEvent('workflow', 'shared_event', { ok: true }) }];"
       },
-      "id": "a588a856-eb47-4384-9cf2-a9602dc02a5f",
+      "id": "28bef631-e5e6-4b38-b993-a99a516e87cd",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "shared-log-lifecycle-event",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "shared"
-  ]
+  }
 }

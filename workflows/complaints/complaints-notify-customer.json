@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "4bb85d20-73c4-4f7c-ae39-4c756bd73e1c",
+      "id": "e485b1ef-4c3c-432f-b8ff-261d6eee91ac",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "e5332eea-40e7-44c3-ba96-b0a5fb422368",
+      "id": "f644d919-0df2-4a6c-a383-971f49ecf750",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { createComplaintRecord, notifyCustomer } = lib;\nconst r = createComplaintRecord({ id: 'cmp_notify', normalized_text: 'test', thread_id: 'thread-demo' });\nreturn [{ json: notifyCustomer(r, { outDir: path.join(dataRoot, 'outbound', 'sent') }).record }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { createComplaintRecord, notifyCustomer } = lib;\nconst r = createComplaintRecord({ id: 'cmp_notify', normalized_text: 'test', thread_id: 'thread-demo' });\nreturn [{ json: notifyCustomer(r, { outDir: path.join(dataRoot, 'outbound', 'sent') }).record }];"
       },
-      "id": "5ac8af8b-c9c0-42f4-8013-a62bb1f2345d",
+      "id": "dc655075-4884-4e25-a9dc-be20601291c8",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "complaints-notify-customer",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "complaints"
-  ]
+  }
 }

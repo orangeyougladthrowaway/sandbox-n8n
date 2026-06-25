@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "6de2a1f5-2b2d-4319-8a16-ffbd44d08bf3",
+      "id": "5af6f363-6190-41cd-a641-6e87763af413",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "efb25d88-d72d-432b-b989-824bd6fb47f8",
+      "id": "43662f67-4dee-4425-9295-d56f96e66cb8",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { FileServiceDeskStore, runQueuePoller } = lib;\nconst store = new FileServiceDeskStore(path.join(dataRoot, '_runtime', 'servicedesk-db.json'));\nconst result = await runQueuePoller(store, { skipHttp: true });\nreturn [{ json: result ?? { message: 'no tickets' } }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { FileServiceDeskStore, runQueuePoller } = lib;\nconst store = new FileServiceDeskStore(path.join(dataRoot, '_runtime', 'servicedesk-db.json'));\nconst result = await runQueuePoller(store, { skipHttp: true });\nreturn [{ json: result ?? { message: 'no tickets' } }];"
       },
-      "id": "7299f4ce-278d-41bc-b085-2f142c64da8a",
+      "id": "e65763ef-0421-46b2-a21d-97d1d5563864",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "sd-queue-poller",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "servicedesk"
-  ]
+  }
 }

@@ -17,8 +17,9 @@ Override with `N8N_REPO_ROOT` and `N8N_DATA_ROOT`.
 
 ```powershell
 cd C:\repos\sandbox-n8n
-.\scripts\run.ps1 test           # unit + smoke — no n8n required
+.\scripts\run.ps1 test           # 84 tests — lib smokes; n8n CLI test skipped if not installed
 .\scripts\run.ps1 demo           # all program smokes
+.\scripts\run.ps1 smoke-n8n      # optional: all 22 workflows via n8n CLI (~4 min)
 ```
 
 ### Programs

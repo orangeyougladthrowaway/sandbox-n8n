@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "a3c589a9-b508-4c94-9f29-758e7c095112",
+      "id": "dfa651d6-bebf-4d26-a068-ee7c0d5e5dba",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "16e05f52-9cd3-43cd-a31d-311db669dfcb",
+      "id": "b5822c23-bfc0-4884-a5fb-9084e0259cf0",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { createServiceDeskTicket, classifyTicket, triageTicket, handoffToTechnician } = lib;\nlet t = createServiceDeskTicket({ summary: 'VPN broken', description: 'error 809' });\nt = classifyTicket(t, { fixtureId: 'vague-vpn' });\nt = triageTicket(t);\nreturn [{ json: handoffToTechnician(t, 'elicitation_complete') }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { createServiceDeskTicket, classifyTicket, triageTicket, handoffToTechnician } = lib;\nlet t = createServiceDeskTicket({ summary: 'VPN broken', description: 'error 809' });\nt = classifyTicket(t, { fixtureId: 'vague-vpn' });\nt = triageTicket(t);\nreturn [{ json: handoffToTechnician(t, 'elicitation_complete') }];"
       },
-      "id": "306096a1-0b28-4e56-8f68-10c225ff3191",
+      "id": "5f823e2c-a71f-4d2f-a77b-4de725b458e6",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "sd-handoff-technician",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "servicedesk"
-  ]
+  }
 }

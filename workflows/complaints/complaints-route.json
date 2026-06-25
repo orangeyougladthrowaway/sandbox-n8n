@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "ee452a44-2c34-41cb-a571-65ea46ffff2c",
+      "id": "913b2fc5-1f22-42e9-8abb-17829713e3fd",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "5ae8e8b3-e048-49a8-8b43-0c89355269da",
+      "id": "3cbb0d70-3383-42f0-a664-0e0417b42b55",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { createComplaintRecord, routeComplaint } = lib;\nlet r = createComplaintRecord({ id: 'cmp_route_demo', normalized_text: 'FCA compliance issue', classification: { category: 'compliance', confidence: 0.9, rationale: 'demo' }, requested_actions: ['COMPLIANCE'] });\nr = await routeComplaint(r, { skipHttp: true });\nreturn [{ json: r }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { createComplaintRecord, routeComplaint } = lib;\nlet r = createComplaintRecord({ id: 'cmp_route_demo', normalized_text: 'FCA compliance issue', classification: { category: 'compliance', confidence: 0.9, rationale: 'demo' }, requested_actions: ['COMPLIANCE'] });\nr = await routeComplaint(r, { skipHttp: true });\nreturn [{ json: r }];"
       },
-      "id": "1d1a0646-1a26-4302-bbec-ad5d750f31d4",
+      "id": "43ebe6ad-1b4a-4f4f-b757-a73965d4d77e",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "complaints-route",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "complaints"
-  ]
+  }
 }

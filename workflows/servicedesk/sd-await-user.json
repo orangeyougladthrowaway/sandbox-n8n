@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "829ed607-c06d-4a78-bf05-bbd36a1583d6",
+      "id": "2c601c7b-df9b-4dac-bb83-cea8e081c7b3",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "f0f496fe-abfc-4c43-affa-889de3aab1bd",
+      "id": "514b2994-931b-4042-9c86-1c8ad7d3daaf",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst { normalizeTicketPayload, processTicketCycle, FileServiceDeskStore } = lib;\nconst inDir = path.join(dataRoot, 'inbound', 'servicedesk', 'chat');\nconst store = new FileServiceDeskStore(path.join(dataRoot, '_runtime', 'sd-await-demo.json'));\nlet t = normalizeTicketPayload(JSON.parse(fs.readFileSync(path.join(repoRoot, 'fixtures', 'servicedesk', 'tickets', 'awaiting-user.json'), 'utf8')));\nstore.upsertTicket(t);\nfs.mkdirSync(inDir, { recursive: true });\nfs.writeFileSync(path.join(inDir, t.id + '-user-reply.json'), JSON.stringify({ text: 'Outlook 365, still failing' }));\nreturn [{ json: await processTicketCycle(t, store, { skipHttp: true, inDir }) }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { normalizeTicketPayload, processTicketCycle, FileServiceDeskStore } = lib;\nconst inDir = path.join(dataRoot, 'inbound', 'servicedesk', 'chat');\nconst store = new FileServiceDeskStore(path.join(dataRoot, '_runtime', 'sd-await-demo.json'));\nlet t = normalizeTicketPayload(JSON.parse(fs.readFileSync(path.join(repoRoot, 'fixtures', 'servicedesk', 'tickets', 'awaiting-user.json'), 'utf8')));\nstore.upsertTicket(t);\nfs.mkdirSync(inDir, { recursive: true });\nfs.writeFileSync(path.join(inDir, t.id + '-user-reply.json'), JSON.stringify({ text: 'Outlook 365, still failing' }));\nreturn [{ json: await processTicketCycle(t, store, { skipHttp: true, inDir }) }];"
       },
-      "id": "97229b95-6f84-482b-b320-0e84421b0665",
+      "id": "81941010-54c5-437a-8195-181e6b40078e",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "sd-await-user",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "servicedesk"
-  ]
+  }
 }

@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "ccadb1b9-2f77-4701-b991-82ef924309d6",
+      "id": "cc6b0487-7d06-426e-aa34-3b6deed5f531",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "d7016a0a-d352-4feb-ae49-c3d3e765eb8e",
+      "id": "cad4d1ce-27ec-4914-921b-6787c63fcadf",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst fs = await import('node:fs');\nconst { normalizeTicketPayload, classifyTicket, triageTicket, analyzeKb } = lib;\nlet t = normalizeTicketPayload(JSON.parse(fs.readFileSync(path.join(repoRoot, 'fixtures', 'servicedesk', 'tickets', 'awaiting-user.json'), 'utf8')));\nt = classifyTicket(t);\nt = triageTicket(t);\nt = await analyzeKb(t, { skipHttp: true });\nreturn [{ json: t }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { normalizeTicketPayload, classifyTicket, triageTicket, analyzeKb } = lib;\nlet t = normalizeTicketPayload(JSON.parse(fs.readFileSync(path.join(repoRoot, 'fixtures', 'servicedesk', 'tickets', 'awaiting-user.json'), 'utf8')));\nt = classifyTicket(t);\nt = triageTicket(t);\nt = await analyzeKb(t, { skipHttp: true });\nreturn [{ json: t }];"
       },
-      "id": "054f6f79-75b0-43ed-88ac-813d0996f366",
+      "id": "44972c0d-ce34-432e-8eb2-188c77bdcc39",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "sd-existing-ticket-refresh",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "servicedesk"
-  ]
+  }
 }

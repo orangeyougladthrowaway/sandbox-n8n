@@ -7,7 +7,7 @@
         "height": 140,
         "width": 360
       },
-      "id": "8b041b5f-d7ea-42e0-bc04-3d32118f5712",
+      "id": "e457586b-c448-4d42-b82a-31a4abbf7590",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -18,7 +18,7 @@
     },
     {
       "parameters": {},
-      "id": "aa85b27b-bfdd-4362-b83b-7aced16c6b33",
+      "id": "d7515fff-96b6-4732-8f2c-4d30797d3712",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -30,9 +30,9 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const path = await import('node:path');\nconst { pathToFileURL } = await import('node:url');\nconst repoRoot = process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n';\nconst dataRoot = process.env.N8N_DATA_ROOT ?? 'C:/sandbox-dir/sandbox-n8n';\nconst lib = await import(pathToFileURL(path.join(repoRoot, 'lib', 'index.js')).href);\nconst { createServiceDeskTicket, classifyTicket, triageTicket, processTicketCycle, FileServiceDeskStore } = lib;\nlet t = createServiceDeskTicket({ summary: 'VPN broken', description: 'cannot connect' });\nt = classifyTicket(t, { fixtureId: 'vague-vpn' });\nt = triageTicket(t);\nconst store = new FileServiceDeskStore(path.join(dataRoot, '_runtime', 'sd-bot-demo.json'));\nstore.upsertTicket(t);\nconst out = path.join(dataRoot, 'outbound', 'servicedesk', 'chat');\nreturn [{ json: await processTicketCycle(t, store, { skipHttp: true, outDir: out }) }];"
+        "jsCode": "const path = require('path');\nconst fs = require('fs');\nconst { createRequire } = require('module');\nconst req = createRequire(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'package.json'));\nconst lib = req(path.join(process.env.N8N_REPO_ROOT ?? 'C:/repos/sandbox-n8n', 'lib', 'index.js'));\nconst repoRoot = lib.REPO_ROOT;\nconst dataRoot = lib.DATA_ROOT;\nconst { createServiceDeskTicket, classifyTicket, triageTicket, processTicketCycle, FileServiceDeskStore } = lib;\nlet t = createServiceDeskTicket({ summary: 'VPN broken', description: 'cannot connect' });\nt = classifyTicket(t, { fixtureId: 'vague-vpn' });\nt = triageTicket(t);\nconst store = new FileServiceDeskStore(path.join(dataRoot, '_runtime', 'sd-bot-demo.json'));\nstore.upsertTicket(t);\nconst out = path.join(dataRoot, 'outbound', 'servicedesk', 'chat');\nreturn [{ json: await processTicketCycle(t, store, { skipHttp: true, outDir: out }) }];"
       },
-      "id": "402b5fb6-c872-4fac-8fd5-5989991a8eef",
+      "id": "631f6d26-1407-4f2b-a852-b2d12967d151",
       "name": "Run lib",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,8 +62,5 @@
   "versionId": "sd-bot-reply",
   "meta": {
     "instanceId": "sandbox-n8n"
-  },
-  "tags": [
-    "servicedesk"
-  ]
+  }
 }

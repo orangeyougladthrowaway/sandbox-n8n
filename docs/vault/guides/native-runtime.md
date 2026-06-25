@@ -9,9 +9,10 @@ This sandbox runs entirely on **Node.js on the host** — suitable for VMs witho
 | Command | What runs | Port |
 |---------|-----------|------|
 | `run.ps1 test` / `demo` | lib + smoke scripts | — |
+| `run.ps1 smoke-n8n` | all 22 workflows via `n8n execute` (isolated under `_smoke/n8n/`) | — |
 | `run.ps1 mock-api` | `sandbox-services/server.js` | 3099 |
 | `run.ps1 n8n` | global n8n CLI | 5678 |
-| `run.ps1 import-workflows` | imports all JSON under `workflows/` | — |
+| `run.ps1 import-workflows` | flattens `workflows/**/*.json` then `n8n import --separate` | — |
 
 ## Persistence (DATA_ROOT)
 

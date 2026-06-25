@@ -22,7 +22,7 @@ describe('paths', () => {
     assert.match(DATA_ROOT, /sandbox-dir[\\/]sandbox-n8n$/i);
   });
 
-  it('exposes a file URL for n8n Code imports under the repo', () => {
+  it('exposes libImportUrl helper (legacy file URL)', () => {
     assert.match(libImportUrl(), /^file:\/\//);
     assert.match(libImportUrl(), /lib[\\/]index\.js$/);
   });
